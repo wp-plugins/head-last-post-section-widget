@@ -2,17 +2,23 @@
 
 /*
 Plugin Name: Head Last Post Section Widget
-Plugin URI: http://URI_Of_Page_Describing_Plugin_and_Updates
+Plugin URI: https://wordpress.org/plugins/head-last-post-section-widget/
 Description: Select a post or page and display the first "section"(as you put the delimiters) in a widget.
-Version: 1.0
+Version: 1.01
 Author: lion2486
 Author URI: http://codescar.eu
 License: GPLv2
 */
 
+/**
+ * Class HeadLastPostSection_Widget
+ * @description Wordpress Widget plugin to display "sections" of a post/page.
+ * @property String $text_domain The plugin's translation text domain.
+ */
 class HeadLastPostSection_Widget extends WP_Widget {
 
-    private $text_domain = "HeadLastPostSection";
+    private $text_domain = "head-last-post-section-widget";
+
     /**
      * Sets up the widgets name etc
      */
@@ -68,18 +74,19 @@ class HeadLastPostSection_Widget extends WP_Widget {
      * Outputs the options form on admin
      *
      * @param array $instance The widget options
+     *
+     * @return void
      */
     public function form( $instance ) {
         // outputs the options form on admin
         $title = ! empty( $instance['title'] ) ? $instance['title'] : __( 'New title', $this->text_domain );
         $post = ! empty( $instance['post'] ) ? $instance['post'] : 0;
-        $pattern = ! empty( $instance['pattern'] ) ? $instance['pattern'] : '/n';
+        $pattern = ! empty( $instance['pattern'] ) ? $instance['pattern'] : '';
         $number = ! empty( $instance['number'] ) ? $instance['number'] : 1;
         $link_to_post = ! empty( $instance['link_to_post'] ) ? $instance['link_to_post'] : 0;
         $link_title = ! empty( $instance['link_title'] ) ? $instance['link_title'] : 'Read more...';
 
-
-         $args = array(
+        $args = array(
             'sort_order' => 'ASC',
             'sort_column' => 'post_title',
             'hierarchical' => 1,
@@ -115,9 +122,9 @@ class HeadLastPostSection_Widget extends WP_Widget {
             'post_status'      => 'publish',
             'suppress_filters' => true
         );
-        $posts = get_posts( $args ); ?>
-
+        $posts = get_posts( $args );
         ?>
+
         <p>
             <label for="<?php echo $this->get_field_id( 'title' ); ?>"><?php _e( 'Title:' ); ?></label>
             <input class="widefat" id="<?php echo $this->get_field_id( 'title' ); ?>" name="<?php echo $this->get_field_name( 'title' ); ?>" type="text" value="<?php echo esc_attr( $title ); ?>">
@@ -127,19 +134,19 @@ class HeadLastPostSection_Widget extends WP_Widget {
             <select class="widefat" id="<?php echo $this->get_field_id( 'post' ); ?>" name="<?php echo $this->get_field_name( 'post' ); ?>">
                 <option> -- SELECT -- </option>
                 <?php
-                    echo "<optgroup label=\"" . __( 'Pages', $this->text_domain ) . "\">";
+                echo "<optgroup label=\"" . __( 'Pages', $this->text_domain ) . "\">";
 
-                    foreach( $pages as $p )
-                        echo "<option value=\"" . $p->ID . "\" " . ( $p->ID == $post ? "selected=\"selected\"" : "" ) .">" . $p->post_title . "</option>\n";
+                foreach( $pages as $p )
+                    echo "<option value=\"" . $p->ID . "\" " . ( $p->ID == $post ? "selected=\"selected\"" : "" ) .">" . $p->post_title . "</option>\n";
 
-                    echo "</optgroup>";
+                echo "</optgroup>";
 
-                    echo "<optgroup label=\"" . __( 'Posts', $this->text_domain ) . "\">";
+                echo "<optgroup label=\"" . __( 'Posts', $this->text_domain ) . "\">";
 
-                    foreach( $posts as $p )
-                        echo "<option value=\"" . $p->ID . "\" " . ( $p->ID == $post ? "selected=\"selected\"" : "" ) .">" . $p->post_title . "</option>\n";
+                foreach( $posts as $p )
+                    echo "<option value=\"" . $p->ID . "\" " . ( $p->ID == $post ? "selected=\"selected\"" : "" ) .">" . $p->post_title . "</option>\n";
 
-                    echo "</optgroup>";
+                echo "</optgroup>";
 
                 ?>
             </select>
@@ -155,7 +162,7 @@ class HeadLastPostSection_Widget extends WP_Widget {
                     <li>"[a-zA-Z]{3,} - Matches any string with more or 3 at least lower or uppercase letters"</li>
                 </ul>
                 <br/>
-                Note that the matching string will be desplayed too and all text formatting will be escaped.
+                Note that the matching string will be displayed too and all text formatting will be escaped.
             </span>
             <br/>
 
@@ -173,6 +180,8 @@ class HeadLastPostSection_Widget extends WP_Widget {
 
         </p>
         <?php
+
+        return;
     }
 
     /**
@@ -180,6 +189,8 @@ class HeadLastPostSection_Widget extends WP_Widget {
      *
      * @param array $new_instance The new options
      * @param array $old_instance The previous options
+     *
+     * @return array
      */
     public function update( $new_instance, $old_instance ) {
         // processes widget options to be saved
@@ -198,7 +209,6 @@ class HeadLastPostSection_Widget extends WP_Widget {
         register_widget( 'HeadLastPostSection_Widget' );
     }
 }
-
 
 
 add_action( 'widgets_init', array( 'HeadLastPostSection_Widget', 'register_widget' ) );
